@@ -23,36 +23,7 @@ struct ContentView: View {
                 .foregroundColor(.yellow)
                 .padding(5)
             }
-            Spacer() // this is similar like space-between in CSS
-            HStack {
-                addStack
-                Spacer()
-                removeStack
-            }
-            .font(.title)
-            .padding(.horizontal)
         }
-    }
-    
-    var addStack: some View {
-        Button(action: {
-            if emojiCount < emojis.count {
-                emojiCount += 1
-            }
-        }, label: {
-            Image(systemName: "plus.circle") // in-build icons
-        })
-    }
-    
-    var removeStack: some View {
-        Button(action: {
-            if emojiCount > 1 {
-                emojiCount -= 1
-            }
-        }, label: {
-            Image(systemName: "minus.circle")
-                
-        })
     }
 }
 
@@ -80,7 +51,7 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
             .previewDevice("iPhone 12")
-            .preferredColorScheme(.dark)
-            .previewInterfaceOrientation(.portraitUpsideDown) // enable dark mode
+            .preferredColorScheme(.dark)  // enable dark mode
+            .previewInterfaceOrientation(.portraitUpsideDown)
     }
 }
