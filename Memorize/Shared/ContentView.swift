@@ -8,17 +8,19 @@
 import SwiftUI
 
 struct ContentView: View {
-    var emojis: Array<String> = ["😁","😂","😃","😄","😅","😆","😇","😈","😉","😊","😋","😌","😍","😎","😏","😐","😑","😒","😓","😔","😕","😖","😗","😘","😙","😚","😛","😜","😝","😞","😟","😠","😡","😢","😣","😤","😥","😦","😧","😨","😩","😪","😫","😬","😭","😮","😯","😰","😱","😲","😳","😴","😵","😶","😷","😸"]
-    @State var emojiCount: Int = 20
+    @ObservedObject var viewModel : EmojiMemoryGame
     
     var body: some View {
         return VStack {
             ScrollView {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 75))]) { // add adaptive to manage number of cards per row (this is important in portrait and landscape modes)
-                    ForEach(emojis[0..<emojiCount], id: \.self, content: { emoji in
-                        CardView(content: emoji)
+                    ForEach(viewModel.cards) { card in
+                        CardView(card: card)
                             .aspectRatio(1, contentMode: .fit) // resize the card item and fit to the size
-                    })
+                            .onTapGesture {
+                                viewModel.choose(card)
+                            }
+                    }
                 }
                 .foregroundColor(.yellow)
                 .padding(5)
@@ -28,28 +30,26 @@ struct ContentView: View {
 }
 
 struct CardView: View {
-    var content: String
-    @State var isFaceUp: Bool = true // enable state manage to perform onTapGuesture
+    let card: MemoryGame<String>.Card
     
     var body: some View {
         let flipableCard = RoundedRectangle(cornerRadius: 15)
         ZStack (alignment: .center) {
-            if isFaceUp {
+            if card.isFaceUp {
                 flipableCard.fill(.white)
                 flipableCard.stroke(lineWidth:3)
-                Text(content).font(.largeTitle).bold()
+                Text(card.content).font(.largeTitle).bold()
             } else {
                 flipableCard.fill(.yellow)
             }
-        }.onTapGesture {
-            isFaceUp = !isFaceUp
         }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        let game = EmojiMemoryGame()
+        ContentView(viewModel: game)
             .previewDevice("iPhone 12")
             .preferredColorScheme(.dark)  // enable dark mode
             .previewInterfaceOrientation(.portraitUpsideDown)
