@@ -39,6 +39,8 @@ struct CardView: View {
                 flipableCard.fill(.white)
                 flipableCard.stroke(lineWidth:3)
                 Text(card.content).font(.largeTitle).bold()
+            } else if card.isMatched {
+                flipableCard.opacity(0)
             } else {
                 flipableCard.fill(.yellow)
             }
