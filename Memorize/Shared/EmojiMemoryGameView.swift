@@ -7,18 +7,18 @@
 
 import SwiftUI
 
-struct ContentView: View {
-    @ObservedObject var viewModel : EmojiMemoryGame
+struct EmojiMemoryGameView: View {
+    @ObservedObject var game : EmojiMemoryGame
     
     var body: some View {
         return VStack {
             ScrollView {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 75))]) { // add adaptive to manage number of cards per row (this is important in portrait and landscape modes)
-                    ForEach(viewModel.cards) { card in
-                        CardView(card: card)
+                    ForEach(game.cards) { card in
+                        CardView(card)
                             .aspectRatio(1, contentMode: .fit) // resize the card item and fit to the size
                             .onTapGesture {
-                                viewModel.choose(card)
+                                game.choose(card)
                             }
                     }
                 }
@@ -30,7 +30,11 @@ struct ContentView: View {
 }
 
 struct CardView: View {
-    let card: MemoryGame<String>.Card
+    private let card: EmojiMemoryGame.Card
+    
+    init(_ card: EmojiMemoryGame.Card) {
+        self.card = card
+    }
     
     var body: some View {
         let flipableCard = RoundedRectangle(cornerRadius: 15)
@@ -51,7 +55,7 @@ struct CardView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         let game = EmojiMemoryGame()
-        ContentView(viewModel: game)
+        EmojiMemoryGameView(game: game)
             .previewDevice("iPhone 12")
             .preferredColorScheme(.dark)  // enable dark mode
             .previewInterfaceOrientation(.portraitUpsideDown)
