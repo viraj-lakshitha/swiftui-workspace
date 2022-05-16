@@ -13,10 +13,10 @@ struct EmojiMemoryGameView: View {
     var body: some View {
         return VStack {
             ScrollView {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 75))]) { // add adaptive to manage number of cards per row (this is important in portrait and landscape modes)
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 80))]) { // add adaptive to manage number of cards per row (this is important in portrait and landscape modes)
                     ForEach(game.cards) { card in
                         CardView(card)
-                            .aspectRatio(1, contentMode: .fit) // resize the card item and fit to the size
+                            .aspectRatio(2/3, contentMode: .fit) // change 2/3 -> resize the card item and fit to the size
                             .onTapGesture {
                                 game.choose(card)
                             }
@@ -37,18 +37,32 @@ struct CardView: View {
     }
     
     var body: some View {
-        let flipableCard = RoundedRectangle(cornerRadius: 15)
-        ZStack (alignment: .center) {
-            if card.isFaceUp {
-                flipableCard.fill(.white)
-                flipableCard.stroke(lineWidth:3)
-                Text(card.content).font(.largeTitle).bold()
-            } else if card.isMatched {
-                flipableCard.opacity(0)
-            } else {
-                flipableCard.fill(.yellow)
+        GeometryReader(content: { geometry in // Geomatry reader used to responsive size according to CardView
+            ZStack (alignment: .center) {
+                let flipableCard = RoundedRectangle(cornerRadius: DrawingConstants.corderRadius)
+                if card.isFaceUp {
+                    flipableCard.fill(.white)
+                    flipableCard.stroke(lineWidth: DrawingConstants.lineWidth)
+                    Text(card.content)
+                        .font(font(in: geometry.size))
+                        .bold()
+                } else if card.isMatched {
+                    flipableCard.opacity(0)
+                } else {
+                    flipableCard.fill(.yellow)
+                }
             }
-        }
+        })
+    }
+    
+    private func font(in size: CGSize) -> Font {
+        Font.system(size: min(size.height, size.width) * DrawingConstants.fontScale)
+    }
+    
+    private struct DrawingConstants {
+        static let corderRadius: CGFloat = 15
+        static let lineWidth: CGFloat = 3
+        static let fontScale: CGFloat = 0.7
     }
 }
 

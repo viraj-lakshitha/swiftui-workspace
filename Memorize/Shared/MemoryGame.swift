@@ -42,10 +42,8 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
                 }
                 cards[currIndex].isFaceUp = true
             } else {
-                
                 indexOfTheOneAndOnlyFaceUpCard = currIndex
             }
-            cards[currIndex].isFaceUp.toggle()
         }
     }
     
