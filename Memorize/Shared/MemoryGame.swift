@@ -11,7 +11,25 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
     // private access modifier only affect to setter only
     private(set) var cards: Array<Card>
     
-    private var indexOfTheOneAndOnlyFaceUpCard: Int?
+    private var indexOfTheOneAndOnlyFaceUpCard: Int? {
+        get {
+            /**
+            let faceUpCardIndicies = cards.indices.filter({ cards[$0].isFaceUp }) // "cards[$0].isFaceUp" is same as "index in cards[index].isFaceUp"
+            return faceUpCardIndicies.oneAnOnly // oneAndOnly is a custom value/attribute created using extension
+            */
+            // Above code is simplified version of following code
+            cards.indices.filter({ cards[$0].isFaceUp }).oneAnOnly
+        }
+        set {
+            /**
+            for index in cards.indices { // "cards.indices" are same as "0..<cards.count"
+                cards[index].isFaceUp = (index == newValue)  // newValue is an in-build param, it is the new value of the indexOfTheOneAndOnlyFaceUpCard
+            }
+            */
+            // Above code is simplified version of following code
+            cards.indices.forEach{cards[$0].isFaceUp = ($0 == newValue)}
+        }
+    }
     
     // "underscore" means, optional key for the input of type Card
     mutating func choose(_ card: Card) { // mutating, means that this function is going to change the this whole struct
@@ -22,19 +40,15 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
                     cards[currIndex].isMatched = true
                     cards[potentialMatchIndex].isMatched = true
                 }
-                indexOfTheOneAndOnlyFaceUpCard = nil
+                cards[currIndex].isFaceUp = true
             } else {
-                for index in cards.indices { // "cards.indices" are same as "0..<cards.count"
-                    cards[index].isFaceUp = false
-                }
                 indexOfTheOneAndOnlyFaceUpCard = currIndex
             }
-            cards[currIndex].isFaceUp.toggle()
         }
     }
     
     init(numberOfPairsOfCards: Int, createCardContent: (Int) -> CardContent) {
-        cards = Array<Card>()
+        cards = [] // declare empty array
         for pairIndex in 0..<numberOfPairsOfCards {
             let content: CardContent = createCardContent(pairIndex)
             cards.append(Card(content: content, id: pairIndex*2)) // add duplicate record, because need to have even number of same emojis to play game
@@ -43,9 +57,19 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
     }
     
     struct Card: Identifiable {
-        var isFaceUp: Bool = false
-        var isMatched: Bool = false
-        var content: CardContent
-        var id: Int
+        var isFaceUp = false
+        var isMatched = false
+        let content: CardContent
+        let id: Int
+    }
+}
+
+extension Array {
+    var oneAnOnly: Element? {
+        if count == 1 {
+            return first
+        } else {
+            return nil
+        }
     }
 }
